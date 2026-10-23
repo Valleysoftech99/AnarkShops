@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#101416">
+  <meta name="theme-color" content="#0B0E14">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="AnarkShop">
@@ -21,29 +21,39 @@
     .qty-inline{display:inline-flex;align-items:center;gap:6px}.qty-inline span{font-size:10px;color:var(--muted)}.qty-inline input{width:58px;min-height:30px;padding:4px 7px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--text);font-size:12px;font-weight:750;text-align:center}.items.edit-mode .item-meta{margin-top:8px}
     .welcome-copy{margin:0 0 15px;color:var(--muted);line-height:1.5;font-size:14px}.theme-options{display:grid;gap:9px}.theme-choice{display:flex;align-items:center;gap:12px;text-align:left;width:100%;padding:12px;border:1px solid var(--line);border-radius:16px;background:var(--bg)}.theme-choice[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 22%,transparent)}.theme-preview{width:44px;height:44px;border-radius:13px;flex:none;border:1px solid #0002}.dark-preview{background:linear-gradient(135deg,#101416 0 55%,#00b6ae 55%)}.pastel-preview{background:linear-gradient(135deg,#fbf6f3 0 55%,#d77b9b 55%)}.theme-choice strong,.theme-choice small{display:block}.theme-choice strong{font-size:14px}.theme-choice small{font-size:11px;color:var(--muted);margin-top:3px}.theme-radio{margin-left:auto;width:19px;height:19px;border:2px solid var(--line);border-radius:50%;flex:none}.theme-choice[aria-pressed="true"] .theme-radio{border:6px solid var(--accent)}.install-option{margin:16px 0 4px;padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--surface2)}.install-option .primary{width:100%;padding:13px}.install-option .field-hint{margin-top:9px}.welcome-done{width:100%;margin-top:17px}
   </style>
+  <link rel="stylesheet" href="app.css">
 </head>
 <body>
   <main class="app">
     <header class="topbar">
-      <div class="brand"><div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M5 12h14M5 17h8"/><path d="m17 16 2 2 3-4"/></svg></div>AnarkShop</div>
-      <div class="top-actions"><button id="themeToggle" class="icon-btn" aria-label="Cambiar tema" title="Cambiar tema"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></button></div>
+      <button id="menuBtn" class="icon-btn" aria-label="Abrir menú" aria-expanded="false"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/><path d="m7 6 2 2 3-3"/></svg></button>
+      <div id="brandName" class="brand-name">AnarkShop</div><span class="header-spacer"></span>
     </header>
     <section id="homeView" class="view active">
-      <div class="hero"><div class="eyebrow">Compras más simples</div><h1>Todo lo que necesitas,<br>en una lista.</h1><p>Organiza tus compras y lleva el control mientras recorres la tienda.</p></div>
-      <div class="section-head"><h2>Tus listas</h2><span id="listCount" class="count"></span></div>
+      <div class="hero"><div id="homeEyebrow" class="eyebrow">Compras más simples</div><h1 id="homeGreeting">Hola</h1><p id="homeIntro">Organiza tus compras y lleva el control mientras recorres la tienda.</p></div>
+      <div class="section-head"><h2 id="listsHeading">Tus listas</h2><span id="listCount" class="count"></span></div>
       <div id="listStack" class="list-stack"></div>
-      <button class="primary create-cta" id="createListBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Crear nueva lista</button>
+      <button class="primary create-cta" id="createListBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span id="createListLabel">Crear nueva lista</span></button>
     </section>
     <section id="detailView" class="view">
-      <div class="detail-head"><button class="back-btn" id="backBtn" aria-label="Volver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><div class="detail-title-wrap"><div id="detailTitle" class="detail-title"></div><div id="detailSub" class="detail-sub"></div></div><button class="icon-btn" id="shareBtn" aria-label="Compartir lista por WhatsApp" title="Compartir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 10.7 6.6-4.4m-6.6 7 6.6 4.4"/></svg></button><button class="primary mode-action" id="modeBtn">Guardar lista</button></div>
+      <div class="detail-head"><button class="back-btn" id="backBtn" aria-label="Volver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><div class="detail-title-wrap"><div id="detailTitle" class="detail-title"></div><div id="detailSub" class="detail-sub"></div></div><button class="icon-btn" id="shareBtn" aria-label="Compartir" title="Compartir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 10.7 6.6-4.4m-6.6 7 6.6 4.4"/></svg></button><button id="deleteCurrentBtn" class="icon-btn danger-btn" aria-label="Eliminar lista" title="Eliminar lista"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"/></svg></button><button class="primary mode-action" id="modeBtn">Guardar lista</button></div>
       <div id="items" class="items"></div>
       <button class="primary detail-fab" id="addItemBtn" aria-label="Agregar artículo" title="Agregar artículo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
-      <div class="summary"><div class="summary-inner"><div class="spent"><div class="spent-label">Gastado hasta ahora</div><div id="totalSpent" class="spent-total"></div></div><div class="progress-wrap"><div id="progressText" class="progress-text"></div><div class="progress-track"><div id="progressFill" class="progress-fill"></div></div></div><button id="clearBoughtBtn" class="primary" title="Quitar artículos comprados">Limpiar</button></div></div>
+      <div class="summary"><div class="summary-inner"><div class="spent"><div id="spentLabel" class="spent-label">Gastado hasta ahora</div><div id="totalSpent" class="spent-total"></div></div><div class="progress-wrap"><div id="progressText" class="progress-text"></div><div class="progress-track"><div id="progressFill" class="progress-fill"></div></div></div><button id="clearBoughtBtn" class="primary" title="Quitar artículos comprados">Limpiar</button></div></div>
     </section>
   </main>
+  <div id="drawerRoot">
+    <div id="drawerScrim" class="drawer-scrim"></div>
+    <aside class="drawer" aria-label="Menú principal">
+      <div class="drawer-profile"><div id="drawerAvatar" class="avatar-badge">☀️</div><div><div id="drawerName" class="drawer-name">Usuario</div><div id="drawerCaption" class="drawer-caption">Listas de compras</div></div></div>
+      <button id="homeNav" class="drawer-link" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1Z"/></svg>Inicio</button>
+      <button id="profileNav" class="drawer-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Perfil</button>
+      <div class="drawer-footer">AnarkShop</div>
+    </aside>
+  </div>
   <div id="modalBackdrop" class="modal-backdrop" role="presentation"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-head"><h2 id="modalTitle"></h2><button class="close-btn" id="closeModal" aria-label="Cerrar">×</button></div><form id="modalForm"></form></section></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script>
+  <script type="text/plain" id="legacy-app-script">
     (()=>{
       const STORE='anarkshop-data-v1',THEME='anarkshop-theme-v1';
       const $=id=>document.getElementById(id); let lists=load(),currentId=null,activeMode='shop',modalMode=null,editingId=null,toastTimer,deferredInstallPrompt=null;
@@ -111,5 +121,6 @@
       if('serviceWorker'in navigator&&location.protocol!=='file:')window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
     })();
   </script>
+  <script src="./app.js"></script>
 </body>
 </html>

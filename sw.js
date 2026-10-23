@@ -1,5 +1,5 @@
-const CACHE = 'anarkshop-shell-v2';
-const SHELL = ['./', './index.html', './manifest.json', './icon.svg'];
+const CACHE = 'anarkshop-shell-v3';
+const SHELL = ['./', './index.html', './manifest.json', './icon.svg', './app.js', './app.css'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
 });
