@@ -4,6 +4,7 @@
   const APP_KEY = 'anarkshop-app-v2';
   const OLD_LISTS_KEY = 'anarkshop-data-v1';
   const OLD_THEME_KEY = 'anarkshop-theme-v1';
+  const LIMITS = Object.freeze({ profileName:40, listName:70, itemName:100, brand:60, lists:200, itemsPerList:500, pasteChars:50000, sharedPayloadChars:100000, sharedPayloadBytes:75000, quantity:1000000, price:1000000000000 });
   const $ = id => document.getElementById(id);
   const AVATARS = [
     { id: 'flor', emoji: '🌸' }, { id: 'calavera', emoji: '💀' },
@@ -14,42 +15,143 @@
   const AVATAR_LABELS = { es:{flor:'Flor',calavera:'Calavera',auto:'Auto',guitarra:'Guitarra',sol:'Sol',nube:'Nube',libro:'Libro'}, en:{flor:'Flower',calavera:'Skull',auto:'Car',guitarra:'Guitar',sol:'Sun',nube:'Cloud',libro:'Book'} };
   const COPY = {
     es: {
-      menu:'Abrir menú',home:'Inicio',profile:'Perfil',appTitle:'Lista de {name}',homeEyebrow:'Compras más simples',greeting:'Hola, {name}',homeIntro:'Organiza tus compras y lleva el control mientras recorres la tienda.',lists:'Tus listas',createList:'Crear nueva lista',emptyHomeTitle:'Tu próxima compra empieza aquí',emptyHome:'Crea una lista y agrega todo lo que necesitas.',items:'artículos',item:'artículo',purchased:'comprados',draft:'Borrador · falta guardar',back:'Volver',share:'Compartir',deleteList:'Eliminar lista',saveList:'Guardar lista',editList:'Editar lista',prepare:'Preparando lista',shopping:'Lista para comprar',addItem:'Agregar artículo',clear:'Limpiar',spent:'Gastado hasta ahora',pasteList:'Pegar una lista',emptyList:'Lista vacía',pasteHint:'Pega aquí una lista de WhatsApp o un documento, o agrega artículos uno por uno.',shareTitle:'Compartir lista',whatsapp:'Compartir por WhatsApp',copyLink:'Compartir enlace de la app',copyDone:'Enlace copiado',copyFail:'No se pudo copiar el enlace',linkHint:'El enlace lleva una copia de esta lista. Al abrirlo, se importa en la app.',newListTitle:'Crear nueva lista',listName:'Nombre de la lista',listNamePlaceholder:'Ej. Compras de la semana',cancel:'Cancelar',create:'Crear lista',pasteTitle:'Pegar lista de compras',pasteLabel:'Pega texto, un artículo por renglón',pastePlaceholder:'Leche\nPan\n2 x Yogur',pasteHelp:'También reconoce cantidades como «2 x Leche» o «Leche - 2».',addToList:'Agregar a la lista',itemName:'Artículo',itemPlaceholder:'Ej. Leche entera',quantity:'Cantidad',brand:'Marca (opcional)',brandPlaceholder:'Ej. La Serenísima',price:'Precio unitario (opcional)',save:'Guardar',add:'Agregar artículo',editItem:'Editar artículo',delete:'Eliminar',rename:'Cambiar nombre',renameTitle:'Cambiar nombre',emptyPasteError:'Pega al menos un artículo, uno por renglón',qtyError:'La cantidad debe ser mayor que cero',priceError:'Ingresa un precio válido',listCreated:'Lista creada',listSaved:'Lista guardada. ¡A comprar!',itemAdded:'Artículo agregado',itemUpdated:'Artículo actualizado',itemRemoved:'Artículo eliminado',listRemoved:'Lista eliminada',nameUpdated:'Nombre actualizado',nothingBought:'Todavía no hay artículos comprados',clearBoughtConfirm:'¿Quitar {count} artículos comprados de la lista?',deleteConfirm:'¿Eliminar la lista «{name}» y sus artículos?',noProfile:'Cuéntanos cómo quieres aparecer en AnarkShop.',username:'Tu nombre',usernamePlaceholder:'Ej. Alex',chooseAvatar:'Elige un avatar',theme:'Tema',dark:'Oscuro F1',pastel:'Pasteles',language:'Idioma',spanish:'Español',english:'Inglés',start:'Empezar',saveProfile:'Guardar perfil',install:'Instalar AnarkShop',installHint:'Añádela a tu pantalla de inicio para abrirla como una app.',installSafari:'En Safari, toca Compartir y elige “Agregar a pantalla de inicio”.',installBrowser:'Abre el menú del navegador y elige “Instalar app” o “Agregar a pantalla principal”.',installing:'Instalación iniciada',chooseProfile:'Completa tu perfil para continuar.',profileSaved:'Perfil actualizado',imported:'Lista compartida importada',badImport:'No se pudo abrir la lista compartida',qtyUnit:'CANT.',priceUnit:'PRECIO / UNIDAD'
+      menu:'Abrir menú',home:'Inicio',profile:'Perfil',appTitle:'Lista de {name}',homeEyebrow:'Compras más simples',greeting:'Hola, {name}',homeIntro:'Organiza tus compras y lleva el control mientras recorres la tienda.',lists:'Tus listas',createList:'Crear nueva lista',emptyHomeTitle:'Tu próxima compra empieza aquí',emptyHome:'Crea una lista y agrega todo lo que necesitas.',items:'artículos',item:'artículo',purchased:'comprados',draft:'Borrador · falta guardar',back:'Volver',share:'Compartir',deleteList:'Eliminar lista',saveList:'Guardar lista',editList:'Editar lista',prepare:'Preparando lista',shopping:'Lista para comprar',addItem:'Agregar artículo',clear:'Limpiar',spent:'Gastado hasta ahora',pasteList:'Pegar una lista',emptyList:'Lista vacía',pasteHint:'Pega aquí una lista de WhatsApp o un documento, o agrega artículos uno por uno.',shareTitle:'Compartir lista',whatsapp:'Compartir por WhatsApp',copyLink:'Compartir enlace de la app',copyDone:'Enlace copiado',copyFail:'No se pudo copiar el enlace',linkHint:'El enlace lleva una copia de esta lista. Al abrirlo, se importa en la app.',newListTitle:'Crear nueva lista',listName:'Nombre de la lista',listNamePlaceholder:'Ej. Lista del proyecto',cancel:'Cancelar',create:'Crear lista',pasteTitle:'Pegar lista de compras',pasteLabel:'Pega texto, un artículo por renglón',pastePlaceholder:'Artículo 1\nArtículo 2\n2 x Artículo 3',pasteHelp:'También reconoce cantidades como «2 x Artículo» o «Artículo - 2».',addToList:'Agregar a la lista',itemName:'Artículo',itemPlaceholder:'Ej. Nombre del artículo',quantity:'Cantidad',brand:'Marca (opcional)',brandPlaceholder:'Ej. Marca preferida',price:'Precio unitario (opcional)',save:'Guardar',add:'Agregar artículo',editItem:'Editar artículo',delete:'Eliminar',rename:'Cambiar nombre',renameTitle:'Cambiar nombre',emptyPasteError:'Pega al menos un artículo, uno por renglón',qtyError:'La cantidad debe ser mayor que cero',priceError:'Ingresa un precio válido',listCreated:'Lista creada',listSaved:'Lista guardada. ¡A comprar!',itemAdded:'Artículo agregado',itemUpdated:'Artículo actualizado',itemRemoved:'Artículo eliminado',listRemoved:'Lista eliminada',nameUpdated:'Nombre actualizado',nothingBought:'Todavía no hay artículos comprados',clearBoughtConfirm:'¿Quitar {count} artículos comprados de la lista?',deleteConfirm:'¿Eliminar la lista «{name}» y sus artículos?',noProfile:'Cuéntanos cómo quieres aparecer en AnarkShop.',username:'Tu nombre',usernamePlaceholder:'Ej. Alex',chooseAvatar:'Elige un avatar',theme:'Tema',dark:'Oscuro F1',pastel:'Pasteles',language:'Idioma',spanish:'Español',english:'Inglés',start:'Empezar',saveProfile:'Guardar perfil',install:'Instalar AnarkShop',installHint:'Añádela a tu pantalla de inicio para abrirla como una app.',installSafari:'En Safari, toca Compartir y elige “Agregar a pantalla de inicio”.',installBrowser:'Abre el menú del navegador y elige “Instalar app” o “Agregar a pantalla principal”.',installing:'Instalación iniciada',chooseProfile:'Completa tu perfil para continuar.',profileSaved:'Perfil actualizado',imported:'Lista compartida importada',badImport:'No se pudo abrir la lista compartida',qtyUnit:'CANT.',priceUnit:'PRECIO / UNIDAD'
     },
     en: {
-      menu:'Open menu',home:'Home',profile:'Profile',appTitle:'{name}’s Lists',homeEyebrow:'Shopping made simpler',greeting:'Hi, {name}',homeIntro:'Organize your shopping and keep track as you walk through the store.',lists:'Your lists',createList:'Create new list',emptyHomeTitle:'Your next shop starts here',emptyHome:'Create a list and add everything you need.',items:'items',item:'item',purchased:'bought',draft:'Draft · needs saving',back:'Back',share:'Share',deleteList:'Delete list',saveList:'Save list',editList:'Edit list',prepare:'Preparing list',shopping:'Shopping list',addItem:'Add item',clear:'Clear',spent:'Spent so far',pasteList:'Paste a list',emptyList:'This list is empty',pasteHint:'Paste a WhatsApp list or text document here, or add items one by one.',shareTitle:'Share list',whatsapp:'Share on WhatsApp',copyLink:'Share app link',copyDone:'Link copied',copyFail:'Could not copy link',linkHint:'The link contains a copy of this list. Opening it imports the list into the app.',newListTitle:'Create a new list',listName:'List name',listNamePlaceholder:'E.g. Weekly groceries',cancel:'Cancel',create:'Create list',pasteTitle:'Paste shopping list',pasteLabel:'Paste text, one item per line',pastePlaceholder:'Milk\nBread\n2 x Yogurt',pasteHelp:'Quantities like “2 x Milk” or “Milk - 2” are also recognized.',addToList:'Add to list',itemName:'Item',itemPlaceholder:'E.g. Whole milk',quantity:'Quantity',brand:'Brand (optional)',brandPlaceholder:'E.g. Acme',price:'Unit price (optional)',save:'Save',add:'Add item',editItem:'Edit item',delete:'Delete',rename:'Rename',renameTitle:'Change list name',emptyPasteError:'Paste at least one item, one per line',qtyError:'Quantity must be greater than zero',priceError:'Enter a valid price',listCreated:'List created',listSaved:'List saved. Happy shopping!',itemAdded:'Item added',itemUpdated:'Item updated',itemRemoved:'Item removed',listRemoved:'List deleted',nameUpdated:'Name updated',nothingBought:'No items have been checked yet',clearBoughtConfirm:'Remove {count} checked items from the list?',deleteConfirm:'Delete “{name}” and its items?',noProfile:'Choose how you want to appear in AnarkShop.',username:'Your name',usernamePlaceholder:'E.g. Alex',chooseAvatar:'Choose an avatar',theme:'Theme',dark:'F1 dark',pastel:'Pastels',language:'Language',spanish:'Spanish',english:'English',start:'Get started',saveProfile:'Save profile',install:'Install AnarkShop',installHint:'Add it to your home screen to open it like an app.',installSafari:'In Safari, tap Share, then choose “Add to Home Screen”.',installBrowser:'Open your browser menu and choose “Install app” or “Add to Home screen”.',installing:'Installation started',chooseProfile:'Complete your profile to continue.',profileSaved:'Profile updated',imported:'Shared list imported',badImport:'Could not open the shared list',qtyUnit:'QTY.',priceUnit:'PRICE / UNIT'
+      menu:'Open menu',home:'Home',profile:'Profile',appTitle:'{name}’s Lists',homeEyebrow:'Shopping made simpler',greeting:'Hi, {name}',homeIntro:'Organize your shopping and keep track as you walk through the store.',lists:'Your lists',createList:'Create new list',emptyHomeTitle:'Your next shop starts here',emptyHome:'Create a list and add everything you need.',items:'items',item:'item',purchased:'bought',draft:'Draft · needs saving',back:'Back',share:'Share',deleteList:'Delete list',saveList:'Save list',editList:'Edit list',prepare:'Preparing list',shopping:'Shopping list',addItem:'Add item',clear:'Clear',spent:'Spent so far',pasteList:'Paste a list',emptyList:'This list is empty',pasteHint:'Paste a WhatsApp list or text document here, or add items one by one.',shareTitle:'Share list',whatsapp:'Share on WhatsApp',copyLink:'Share app link',copyDone:'Link copied',copyFail:'Could not copy link',linkHint:'The link contains a copy of this list. Opening it imports the list into the app.',newListTitle:'Create a new list',listName:'List name',listNamePlaceholder:'E.g. Project list',cancel:'Cancel',create:'Create list',pasteTitle:'Paste shopping list',pasteLabel:'Paste text, one item per line',pastePlaceholder:'Item 1\nItem 2\n2 x Item 3',pasteHelp:'Quantities like “2 x Item” or “Item - 2” are also recognized.',addToList:'Add to list',itemName:'Item',itemPlaceholder:'E.g. Item name',quantity:'Quantity',brand:'Brand (optional)',brandPlaceholder:'E.g. Preferred brand',price:'Unit price (optional)',save:'Save',add:'Add item',editItem:'Edit item',delete:'Delete',rename:'Rename',renameTitle:'Change list name',emptyPasteError:'Paste at least one item, one per line',qtyError:'Quantity must be greater than zero',priceError:'Enter a valid price',listCreated:'List created',listSaved:'List saved. Happy shopping!',itemAdded:'Item added',itemUpdated:'Item updated',itemRemoved:'Item removed',listRemoved:'List deleted',nameUpdated:'Name updated',nothingBought:'No items have been checked yet',clearBoughtConfirm:'Remove {count} checked items from the list?',deleteConfirm:'Delete “{name}” and its items?',noProfile:'Choose how you want to appear in AnarkShop.',username:'Your name',usernamePlaceholder:'E.g. Alex',chooseAvatar:'Choose an avatar',theme:'Theme',dark:'F1 dark',pastel:'Pastels',language:'Language',spanish:'Spanish',english:'English',start:'Get started',saveProfile:'Save profile',install:'Install AnarkShop',installHint:'Add it to your home screen to open it like an app.',installSafari:'In Safari, tap Share, then choose “Add to Home Screen”.',installBrowser:'Open your browser menu and choose “Install app” or “Add to Home screen”.',installing:'Installation started',chooseProfile:'Complete your profile to continue.',profileSaved:'Profile updated',imported:'Shared list imported',badImport:'Could not open the shared list',qtyUnit:'QTY.',priceUnit:'PRICE / UNIT'
     }
   };
+  const EXTRA_COPY = {
+    es:{ recoveredData:'Algunos datos guardados estaban dañados o fuera de los límites y se omitieron.', noStorage:'No se pudo acceder al almacenamiento local. Los cambios podrían no conservarse.', pasteTooLarge:'El texto pegado supera el tamaño permitido.', tooManyItems:'Una lista puede tener hasta 500 artículos.', listLimit:'Puedes guardar hasta 200 listas.', shareTooLarge:'La lista es demasiado grande para compartirla como enlace.', invalidPasteItem:'Hay un renglón vacío o inválido; revisa nombres y cantidades.', savedLists:'Listas guardadas', drawerCaption:'Listas', drawerLabel:'Menú principal', pricePlaceholder:'0,00', updateAvailable:'Hay una actualización disponible.', updateNow:'Actualizar', cacheError:'No se pudo guardar la copia sin conexión. Comprueba el espacio disponible.', serviceWorkerError:'No se pudo preparar la actualización sin conexión.' },
+    en:{ recoveredData:'Some saved data was damaged or exceeded the limits and was skipped.', noStorage:'Local storage is unavailable. Changes may not be retained.', pasteTooLarge:'The pasted text exceeds the allowed size.', tooManyItems:'A list can contain up to 500 items.', listLimit:'You can save up to 200 lists.', shareTooLarge:'This list is too large to share as a link.', invalidPasteItem:'A line is empty or invalid; check item names and quantities.', savedLists:'Saved lists', drawerCaption:'Lists', drawerLabel:'Main menu', pricePlaceholder:'0.00', updateAvailable:'An update is ready.', updateNow:'Update', cacheError:'The offline copy could not be saved. Check available storage.', serviceWorkerError:'The offline update could not be prepared.' }
+  };
+
+  const REGIONAL_FORMATS = Object.freeze({
+    es:Object.freeze({ locale:'es-AR', currency:'ARS' }),
+    en:Object.freeze({ locale:'en-US', currency:'ARS' })
+  });
 
   const uid = () => globalThis.crypto?.randomUUID?.() || `${Date.now().toString(36)}${Math.random().toString(36).slice(2)}`;
-  const defaultTheme = () => localStorage.getItem(OLD_THEME_KEY) === 'pastel' ? 'pastel' : 'dark_f1';
-  function normalizeItem(item) {
-    if (typeof item === 'string') item = { name: item };
-    if (!item || typeof item !== 'object') return null;
-    const name = String(item.name ?? item.item ?? item.product ?? '').trim();
-    if (!name) return null;
-    const q = String(item.quantity ?? item.qty ?? '1').replace(',', '.');
-    const numericQty = Number(q);
-    return { id: String(item.id || uid()), name, quantity: Number.isFinite(numericQty) && numericQty > 0 ? String(q) : '1', brand: String(item.brand || ''), price: item.price == null || item.price === '' || !Number.isFinite(Number(item.price)) ? null : Number(item.price), done: Boolean(item.checked ?? item.done ?? false) };
+  let stateLoadWarning = false;
+  let stateStorageUnavailable = false;
+  let stateNeedsMigration = false;
+  const defaultTheme = () => { try { return localStorage.getItem(OLD_THEME_KEY) === 'pastel' ? 'pastel' : 'dark_f1'; } catch { stateStorageUnavailable = true; return 'dark_f1'; } };
+  const isRecord = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+  const hasOwn = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
+  const hasControlChars = value => /[\u0000-\u001f\u007f]/.test(value);
+  function parseDecimal(value, { min = 0, max = Number.MAX_SAFE_INTEGER, allowEmpty = false } = {}) {
+    if (allowEmpty && (value === '' || value == null)) return null;
+    if (typeof value !== 'number' && typeof value !== 'string') return undefined;
+    const raw = String(value).trim().replace(',', '.');
+    if (!/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(raw)) return undefined;
+    const number = Number(raw);
+    return Number.isFinite(number) && number >= min && number <= max ? number : undefined;
   }
-  function normalizeList(list) {
-    return { id: String(list.id || uid()), name: String(list.name || 'Lista').trim(), saved: list.saved !== false, createdAt: list.createdAt || new Date().toISOString(), updatedAt: list.updatedAt || list.createdAt || new Date().toISOString(), items: (Array.isArray(list.items) ? list.items : []).map(normalizeItem).filter(Boolean) };
+  function normalizeProfile(value) {
+    if (!isRecord(value) || typeof value.name !== 'string') return null;
+    if (Object.keys(value).some(key => !['name','avatar','theme','language'].includes(key))) stateLoadWarning = true;
+    const name = value.name.trim();
+    if (!name || name.length > LIMITS.profileName || hasControlChars(name)) return null;
+    const avatarIds = new Set(AVATARS.map(avatar => avatar.id));
+    if (!avatarIds.has(value.avatar) || !['pastel','dark_f1'].includes(value.theme) || !['en','es'].includes(value.language)) stateLoadWarning = true;
+    return { name, avatar:avatarIds.has(value.avatar) ? value.avatar : 'sol', theme:value.theme === 'pastel' ? 'pastel' : 'dark_f1', language:value.language === 'en' ? 'en' : 'es' };
+  }
+  function normalizeItem(item, { strict = false, usedIds = null, freshId = false } = {}) {
+    if (typeof item === 'string' && !strict) item = { name:item };
+    if (!isRecord(item)) return null;
+    const allowedFields = ['id','name','quantity','brand','price','checked','done'];
+    if (strict && Object.keys(item).some(key => !allowedFields.includes(key))) return null;
+    if (!strict && Object.keys(item).some(key => !allowedFields.concat('item','product','qty').includes(key))) stateLoadWarning = true;
+    const rawName = item.name ?? (!strict ? item.item ?? item.product : undefined);
+    if (typeof rawName !== 'string') return null;
+    const trimmedName = rawName.trim();
+    if (!trimmedName || hasControlChars(trimmedName) || (strict && trimmedName.length > LIMITS.itemName)) return null;
+    const name = trimmedName.slice(0, LIMITS.itemName);
+    const rawQuantity = hasOwn(item, 'quantity') ? item.quantity : (!strict && hasOwn(item, 'qty') ? item.qty : '1');
+    const quantity = parseDecimal(rawQuantity, { min:Number.MIN_VALUE, max:LIMITS.quantity });
+    if (quantity === undefined) return null;
+    const rawBrand = hasOwn(item, 'brand') ? item.brand : '';
+    if (strict && hasOwn(item, 'brand') && typeof rawBrand !== 'string') return null;
+    if (typeof rawBrand !== 'string' || hasControlChars(rawBrand) || (strict && rawBrand.length > LIMITS.brand)) return null;
+    if (!strict && rawBrand.length > LIMITS.brand) stateLoadWarning = true;
+    const price = parseDecimal(item.price, { min:0, max:LIMITS.price, allowEmpty:true });
+    if (price === undefined) return null;
+    const rawChecked = hasOwn(item, 'checked') ? item.checked : (hasOwn(item, 'done') ? item.done : false);
+    if (strict && typeof rawChecked !== 'boolean') return null;
+    if (!strict && typeof rawChecked !== 'boolean') stateLoadWarning = true;
+    const rawId = typeof item.id === 'string' && /^[\w-]{1,80}$/.test(item.id) ? item.id : '';
+    const id = !freshId && rawId && (!usedIds || !usedIds.has(rawId)) ? rawId : uid();
+    if (!freshId && item.id != null && id !== item.id) stateLoadWarning = true;
+    usedIds?.add(id);
+    return { id, name, quantity:String(quantity), brand:rawBrand.trim().slice(0, LIMITS.brand), price, done:rawChecked === true };
+  }
+  function normalizeList(list, { strict = false, freshIds = false, usedListIds = null } = {}) {
+    if (!isRecord(list)) return null;
+    const allowedFields = ['id','name','saved','createdAt','updatedAt','items'];
+    if (strict && Object.keys(list).some(key => !allowedFields.includes(key))) return null;
+    if (!strict && Object.keys(list).some(key => !allowedFields.includes(key))) stateLoadWarning = true;
+    const rawName = list.name ?? (!strict ? 'Lista' : undefined);
+    if (typeof rawName !== 'string') return null;
+    const trimmedName = rawName.trim();
+    if (!trimmedName || hasControlChars(trimmedName) || (strict && trimmedName.length > LIMITS.listName)) return null;
+    if (strict && hasOwn(list, 'saved') && typeof list.saved !== 'boolean') return null;
+    const name = trimmedName.slice(0, LIMITS.listName);
+    if (strict && (!Array.isArray(list.items) || list.items.length > LIMITS.itemsPerList)) return null;
+    let sourceItems = Array.isArray(list.items) ? list.items : [];
+    if (sourceItems.length > LIMITS.itemsPerList) { if (strict) return null; sourceItems = sourceItems.slice(0, LIMITS.itemsPerList); stateLoadWarning = true; }
+    const usedIds = new Set();
+    const items = sourceItems.map(item => normalizeItem(item, { strict, usedIds, freshId:freshIds }));
+    if (strict && items.some(item => !item)) return null;
+    const cleanedItems = items.filter(Boolean);
+    if (cleanedItems.length !== sourceItems.length || trimmedName.length !== name.length || !Array.isArray(list.items)) stateLoadWarning = true;
+    const validDate = value => {
+      const timestamp = typeof value === 'number' ? value : typeof value === 'string' ? Date.parse(value) : NaN;
+      if (!Number.isFinite(timestamp)) return null;
+      const date = new Date(timestamp);
+      return Number.isFinite(date.getTime()) ? date.toISOString() : null;
+    };
+    const createdAt = validDate(list.createdAt) || new Date().toISOString();
+    if ((list.createdAt != null && !validDate(list.createdAt)) || (list.updatedAt != null && !validDate(list.updatedAt))) stateLoadWarning = true;
+    const candidateId = !freshIds && typeof list.id === 'string' && /^[\w-]{1,80}$/.test(list.id) ? list.id : '';
+    const id = candidateId && (!usedListIds || !usedListIds.has(candidateId)) ? candidateId : uid();
+    if ((!freshIds && list.id != null && id !== list.id) || (list.saved != null && typeof list.saved !== 'boolean')) stateLoadWarning = true;
+    usedListIds?.add(id);
+    return { id, name, saved:typeof list.saved === 'boolean' ? list.saved : true, createdAt, updatedAt:validDate(list.updatedAt) || createdAt, items:cleanedItems };
+  }
+  function readStoredJson(key, fallback) {
+    let raw;
+    try { raw = localStorage.getItem(key); } catch { stateStorageUnavailable = true; return fallback; }
+    if (!raw) return fallback;
+    try { return JSON.parse(raw); } catch { stateLoadWarning = true; return fallback; }
   }
   function loadState() {
-    let stored;
-    try { stored = JSON.parse(localStorage.getItem(APP_KEY) || 'null'); } catch {}
-    if (stored && Array.isArray(stored.lists)) {
-      const userProfile=stored.userProfile && typeof stored.userProfile.name==='string' && stored.userProfile.name.trim() ? stored.userProfile : null;
-      return { profile:userProfile, lists:stored.lists.filter(l=>l&&typeof l==='object').map(normalizeList) };
+    const stored = readStoredJson(APP_KEY, null);
+    if (isRecord(stored) && Array.isArray(stored.lists)) {
+      const profile = stored.userProfile == null ? null : normalizeProfile(stored.userProfile);
+      let sourceLists = stored.lists;
+      if (sourceLists.length > LIMITS.lists) { sourceLists = sourceLists.slice(0, LIMITS.lists); stateLoadWarning = true; }
+      const seenListIds = new Set();
+      const lists = sourceLists.map(list => normalizeList(list, { usedListIds:seenListIds })).filter(Boolean);
+      if (lists.length !== sourceLists.length || (stored.userProfile && !profile)) stateLoadWarning = true;
+      return { profile, lists };
     }
-    let legacy = [];
-    try { legacy = JSON.parse(localStorage.getItem(OLD_LISTS_KEY) || '[]'); } catch {}
-    return { profile: null, lists: Array.isArray(legacy) ? legacy.filter(l=>l&&typeof l==='object').map(normalizeList) : [] };
+    if (stored != null) stateLoadWarning = true;
+    let legacy = readStoredJson(OLD_LISTS_KEY, null);
+    stateNeedsMigration = Array.isArray(legacy);
+    if (legacy == null) legacy = [];
+    if (!Array.isArray(legacy)) { stateLoadWarning = true; legacy = []; }
+    if (legacy.length > LIMITS.lists) { legacy = legacy.slice(0, LIMITS.lists); stateLoadWarning = true; }
+    const seenListIds = new Set();
+    const lists = legacy.map(list => normalizeList(list, { usedListIds:seenListIds })).filter(Boolean);
+    if (lists.length !== legacy.length) stateLoadWarning = true;
+    return { profile:null, lists };
   }
   const state = loadState();
   let currentId = null;
   let activeMode = 'shop';
   let deferredInstallPrompt = null;
+  let waitingWorker = null;
+  let refreshOnControllerChange = false;
   let toastTimer = null;
   let modalSubmit = null;
   let profileDraft = null;
@@ -68,7 +170,8 @@
   };
   const t = (key, vars = {}) => {
     const dict = COPY[state.profile?.language === 'en' ? 'en' : 'es'];
-    return String(dict[key] ?? COPY.es[key] ?? key).replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? '');
+    const lang = state.profile?.language === 'en' ? 'en' : 'es';
+    return String(dict[key] ?? EXTRA_COPY[lang][key] ?? COPY.es[key] ?? EXTRA_COPY.es[key] ?? key).replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? '');
   };
   const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
   const avatarEmoji = id => AVATARS.find(a => a.id === id)?.emoji || '☀️';
@@ -76,8 +179,8 @@
 
   function persist() {
     const payload = { userProfile: state.profile, lists: state.lists };
-    try { localStorage.setItem(APP_KEY, JSON.stringify(payload)); localStorage.setItem(OLD_LISTS_KEY, JSON.stringify(state.lists)); }
-    catch { toast(state.profile?.language === 'en' ? 'Could not save. Check available storage.' : 'No se pudo guardar. Revisa el espacio disponible.'); }
+    try { localStorage.setItem(APP_KEY, JSON.stringify(payload)); return true; }
+    catch { toast(t('noStorage')); return false; }
   }
   function applyTheme(theme) {
     const clean = theme === 'pastel' ? 'pastel' : 'dark_f1';
@@ -106,24 +209,40 @@
     $('spentLabel').textContent = t('spent');
     $('homeNav').lastChild.textContent = t('home');
     $('profileNav').lastChild.textContent = t('profile');
-    $('drawerCaption').textContent = state.profile?.language === 'en' ? 'Shopping lists' : 'Listas de compras';
+    $('drawerCaption').textContent = t('drawerCaption');
+    $('drawerRoot').querySelector('.drawer').setAttribute('aria-label', t('drawerLabel'));
     $('menuBtn').setAttribute('aria-label', t('menu'));
+    $('updateMessage').textContent = t('updateAvailable');
+    $('updateButton').textContent = t('updateNow');
+    renderSavedLists();
   }
   function formatDate(value) {
-    try { return new Intl.DateTimeFormat(state.profile?.language === 'en' ? 'en-US' : 'es-AR', { day:'numeric', month:'short' }).format(new Date(value)); }
+    const regional = REGIONAL_FORMATS[state.profile?.language === 'en' ? 'en' : 'es'];
+    try { return new Intl.DateTimeFormat(regional.locale, { day:'numeric', month:'short' }).format(new Date(value)); }
     catch { return ''; }
   }
   function formatMoney(value) {
-    const locale = state.profile?.language === 'en' ? 'en-US' : 'es-AR';
-    const currency = state.profile?.language === 'en' ? 'USD' : 'ARS';
-    return new Intl.NumberFormat(locale, { style:'currency', currency:'ARS', maximumFractionDigits:2 }).format(Number(value) || 0);
+    const regional = REGIONAL_FORMATS[state.profile?.language === 'en' ? 'en' : 'es'];
+    return new Intl.NumberFormat(regional.locale, { style:'currency', currency:regional.currency, maximumFractionDigits:2 }).format(Number(value) || 0);
   }
   function touch(list) { list.updatedAt = new Date().toISOString(); }
   function toast(message) { const node = $('toast'); node.textContent = message; node.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => node.classList.remove('show'), 2400); }
 
+  function renderSavedLists() {
+    const section = $('savedListsSection');
+    const host = $('savedLists');
+    if (!section || !host) return;
+    const saved = state.lists.filter(list => list.saved).slice().sort((a,b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+    section.hidden = saved.length === 0;
+    $('savedListsHeading').textContent = t('savedLists');
+    host.innerHTML = saved.map(list => `<button class="drawer-list-link" type="button" data-action="open-list" data-id="${escapeHtml(list.id)}" aria-current="${currentId === list.id ? 'page' : 'false'}" aria-label="${escapeHtml(list.name)}"><span class="drawer-list-dot" aria-hidden="true"></span><span class="drawer-list-name">${escapeHtml(list.name)}</span></button>`).join('');
+  }
+
   function renderHome() {
     applyLanguage();
     $('listCount').textContent = `${state.lists.length} ${state.lists.length === 1 ? t('item') : t('items')}`;
+    $('homeNav').setAttribute('aria-current','page');
+    $('profileNav').removeAttribute('aria-current');
     const host = $('listStack');
     if (!state.lists.length) {
       host.innerHTML = `<div class="empty"><div class="empty-icon">${icons.bag}</div><strong>${t('emptyHomeTitle')}</strong>${t('emptyHome')}</div>`;
@@ -154,11 +273,11 @@
         const compact = !editing && item.done;
         const check = editing ? '' : `<input class="check" type="checkbox" ${item.done ? 'checked' : ''} data-action="check-item" data-id="${escapeHtml(item.id)}" aria-label="${escapeHtml(item.name)}">`;
         const quantity = editing
-          ? `<label class="qty-inline"><span>${t('quantity')}</span><input type="text" inputmode="decimal" value="${escapeHtml(item.quantity)}" data-action="edit-quantity" data-id="${escapeHtml(item.id)}" aria-label="${t('quantity')} ${escapeHtml(item.name)}"></label>`
+          ? `<label class="qty-inline"><span>${t('quantity')}</span><input type="text" inputmode="decimal" maxlength="16" value="${escapeHtml(item.quantity)}" data-action="edit-quantity" data-id="${escapeHtml(item.id)}" aria-label="${t('quantity')} ${escapeHtml(item.name)}"></label>`
           : compact ? '' : `<div class="qty-stepper"><button type="button" data-action="step-qty" data-step="-1" data-id="${escapeHtml(item.id)}" aria-label="−">−</button><output>${escapeHtml(item.quantity)}</output><button type="button" data-action="step-qty" data-step="1" data-id="${escapeHtml(item.id)}" aria-label="+">+</button></div>`;
         const meta = compact ? '' : `<div class="item-meta">${quantity}${item.brand ? `<span>${escapeHtml(item.brand)}</span>` : ''}</div>`;
-        const price = !editing && item.done && item.price == null
-          ? `<label class="item-price-entry"><span>${t('priceUnit')}</span><input class="unit-price-input" inputmode="decimal" placeholder="$ 0,00" value="" data-action="edit-price" data-id="${escapeHtml(item.id)}" aria-label="${t('price')} ${escapeHtml(item.name)}"></label>`
+      const price = !editing && item.done && item.price == null
+          ? `<label class="item-price-entry"><span>${t('priceUnit')}</span><input class="unit-price-input" inputmode="decimal" maxlength="16" placeholder="${t('pricePlaceholder')}" value="" data-action="edit-price" data-id="${escapeHtml(item.id)}" aria-label="${t('price')} ${escapeHtml(item.name)}"></label>`
           : `<div class="item-price ${item.price == null ? 'empty-price' : ''}">${item.price == null ? '—' : formatMoney(Number(item.price) * numberQty(item.quantity))}</div>`;
         const actions = compact ? '' : `<div class="item-edit"><button data-action="edit-item" data-id="${escapeHtml(item.id)}">${t('editItem')}</button><button data-action="remove-item" data-id="${escapeHtml(item.id)}">${t('delete')}</button></div>`;
         return `<article class="item ${compact ? 'compact done' : ''}">${check}<div class="item-main"><div class="item-name">${compact ? '' : `${index + 1}. `}${escapeHtml(item.name)}</div>${meta}</div>${price}${actions}</article>`;
@@ -175,13 +294,16 @@
   }
   function numberQty(value) { const n = Number(String(value ?? '1').replace(',', '.')); return Number.isFinite(n) && n > 0 ? n : 1; }
   function openList(id) {
-    currentId = id; activeMode = state.lists.find(l => l.id === id)?.saved === false ? 'edit' : 'shop';
+    const list = state.lists.find(l => l.id === id); if (!list) return;
+    currentId = id; activeMode = list.saved === false ? 'edit' : 'shop';
     $('homeView').classList.remove('active'); $('detailView').classList.add('active');
+    $('homeNav').removeAttribute('aria-current'); $('profileNav').removeAttribute('aria-current');
+    renderSavedLists();
     renderDetail(); window.scrollTo(0,0);
   }
   function goHome() {
     currentId = null; $('detailView').classList.remove('active'); $('homeView').classList.add('active');
-    $('homeNav').setAttribute('aria-current','page'); $('profileNav').removeAttribute('aria-current'); renderHome(); window.scrollTo(0,0);
+    renderHome(); window.scrollTo(0,0);
   }
   function deleteList(id) {
     const list = state.lists.find(l => l.id === id); if (!list) return;
@@ -220,7 +342,7 @@
     const installed = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
     const installBox = onboarding && isPhone && !installed ? `<div class="install-box"><button class="secondary" type="button" data-action="install-app">${t('install')}</button><p class="field-hint">${t('installHint')}</p><p class="field-hint" id="installFallback" hidden></p></div>` : '';
     const content = `<p class="welcome-copy">${onboarding ? t('noProfile') : ''}</p>
-      <div class="field"><label for="profileName">${t('username')}</label><input id="profileName" maxlength="40" required placeholder="${t('usernamePlaceholder')}" value="${escapeHtml(profileDraft.name)}"></div>
+      <div class="field"><label for="profileName">${t('username')}</label><input id="profileName" maxlength="${LIMITS.profileName}" required placeholder="${t('usernamePlaceholder')}" value="${escapeHtml(profileDraft.name)}"></div>
       <div class="field"><label>${t('chooseAvatar')}</label>${avatarChoices(profileDraft.avatar)}</div>
       <div class="field"><label>${t('theme')}</label>${themeChoices(profileDraft.theme)}</div>
       <div class="field"><label for="profileLanguage">${t('language')}</label><select id="profileLanguage"><option value="es" ${profileDraft.language === 'es' ? 'selected' : ''}>${t('spanish')}</option><option value="en" ${profileDraft.language === 'en' ? 'selected' : ''}>${t('english')}</option></select></div>
@@ -228,10 +350,10 @@
     showModal(onboarding ? 'AnarkShop' : t('profile'), content, {
       locked: onboarding,
       submit: () => {
-        const name = $('profileName').value.trim(); if (!name) { $('profileName').focus(); toast(t('chooseProfile')); return; }
+        const name = $('profileName').value.trim(); if (!name || name.length > LIMITS.profileName || hasControlChars(name)) { $('profileName').focus(); toast(t('chooseProfile')); return; }
         profileDraft.name = name; profileDraft.language = $('profileLanguage').value;
-        state.profile = { ...profileDraft }; applyTheme(state.profile.theme); persist(); closeModal(); updateProfileUI(); if (currentId) renderDetail(); else goHome();
-        if (onboarding) { try { localStorage.setItem('anarkshop-profile-onboarded','1'); } catch {} }
+        state.profile = normalizeProfile(profileDraft); if (!state.profile) { toast(t('chooseProfile')); return; }
+        applyTheme(state.profile.theme); persist(); closeModal(); updateProfileUI(); if (currentId) renderDetail(); else goHome();
         if (!onboarding) toast(t('profileSaved'));
       }
     });
@@ -242,41 +364,95 @@
     $('drawerName').textContent = state.profile.name;
     applyTheme(state.profile.theme); applyLanguage();
   }
-  function openDrawer() { $('drawerRoot').classList.add('drawer-open'); $('menuBtn').setAttribute('aria-expanded','true'); }
+  function openDrawer() { renderSavedLists(); $('drawerRoot').classList.add('drawer-open'); $('menuBtn').setAttribute('aria-expanded','true'); }
   function closeDrawer() { $('drawerRoot').classList.remove('drawer-open'); $('menuBtn').setAttribute('aria-expanded','false'); }
 
+  function showUpdateBanner(worker) {
+    waitingWorker = worker;
+    $('updateMessage').textContent = t('updateAvailable');
+    $('updateButton').textContent = t('updateNow');
+    $('updateBanner').hidden = false;
+  }
+  function setupServiceWorker() {
+    if (!('serviceWorker' in navigator) || location.protocol === 'file:') return;
+    const serviceWorker = navigator.serviceWorker;
+    let hadController = Boolean(serviceWorker.controller);
+    serviceWorker.addEventListener('message', event => {
+      if (event.data?.type === 'ANARKSHOP_CACHE_ERROR') toast(t('cacheError'));
+    });
+    serviceWorker.addEventListener('controllerchange', () => {
+      const shouldReload = refreshOnControllerChange || hadController;
+      refreshOnControllerChange = false;
+      hadController = true;
+      if (shouldReload) location.reload();
+    });
+    $('updateButton').addEventListener('click', () => {
+      if (!waitingWorker) return;
+      refreshOnControllerChange = true;
+      waitingWorker.postMessage({ type:'ANARKSHOP_SKIP_WAITING' });
+    });
+    window.addEventListener('load', async () => {
+      let registration;
+      try { registration = await serviceWorker.register('./sw.js'); }
+      catch { toast(t('serviceWorkerError')); return; }
+      if (registration.waiting && serviceWorker.controller) showUpdateBanner(registration.waiting);
+      registration.addEventListener('updatefound', () => {
+        const installing = registration.installing;
+        if (!installing) return;
+        installing.addEventListener('statechange', () => {
+          if (installing.state === 'installed' && serviceWorker.controller) showUpdateBanner(installing);
+        });
+      });
+      registration.update().catch(error => console.warn('AnarkShop update check failed.', error));
+    });
+  }
+
   function showCreateModal() {
-    showModal(t('newListTitle'), `<div class="field"><label for="listName">${t('listName')}</label><input id="listName" maxlength="70" required placeholder="${t('listNamePlaceholder')}"></div><div class="modal-actions"><button type="button" class="secondary" data-action="close-modal">${t('cancel')}</button><button class="primary" type="submit">${t('create')}</button></div>`, {
-      submit: () => { const name = $('listName').value.trim(); if (!name) return; const now = new Date().toISOString(); const list = { id:uid(), name, saved:false, createdAt:now, updatedAt:now, items:[] }; state.lists.unshift(list); persist(); closeModal(); renderHome(); openList(list.id); toast(t('listCreated')); }
+    if (state.lists.length >= LIMITS.lists) { toast(t('listLimit')); return; }
+    showModal(t('newListTitle'), `<div class="field"><label for="listName">${t('listName')}</label><input id="listName" maxlength="${LIMITS.listName}" required placeholder="${t('listNamePlaceholder')}"></div><div class="modal-actions"><button type="button" class="secondary" data-action="close-modal">${t('cancel')}</button><button class="primary" type="submit">${t('create')}</button></div>`, {
+      submit: () => { const name = $('listName').value.trim(); if (!name || name.length > LIMITS.listName || hasControlChars(name)) return; const now = new Date().toISOString(); const list = { id:uid(), name, saved:false, createdAt:now, updatedAt:now, items:[] }; state.lists.unshift(list); persist(); closeModal(); goHome(); toast(t('listCreated')); }
     });
   }
   function showPasteModal() {
-    showModal(t('pasteTitle'), `<div class="field"><label for="pasteText">${t('pasteLabel')}</label><textarea id="pasteText" required placeholder="${t('pastePlaceholder')}"></textarea><div class="field-hint">${t('pasteHelp')}</div></div><div class="modal-actions"><button type="button" class="secondary" data-action="close-modal">${t('cancel')}</button><button class="primary" type="submit">${t('addToList')}</button></div>`, {
-      submit: () => { const list = currentList(); const added = parseLines($('pasteText').value); if (!list || !added.length) { toast(t('emptyPasteError')); return; } list.items.push(...added); touch(list); persist(); closeModal(); renderDetail(); }
+    showModal(t('pasteTitle'), `<div class="field"><label for="pasteText">${t('pasteLabel')}</label><textarea id="pasteText" maxlength="${LIMITS.pasteChars}" required placeholder="${t('pastePlaceholder')}"></textarea><div class="field-hint">${t('pasteHelp')}</div></div><div class="modal-actions"><button type="button" class="secondary" data-action="close-modal">${t('cancel')}</button><button class="primary" type="submit">${t('addToList')}</button></div>`, {
+      submit: () => {
+        const list = currentList(); if (!list) return;
+        let added;
+        try { added = parseLines($('pasteText').value); } catch (error) { toast(t(error.message === 'paste-too-large' ? 'pasteTooLarge' : error.message === 'too-many-items' ? 'tooManyItems' : 'invalidPasteItem')); return; }
+        if (!added.length) { toast(t('emptyPasteError')); return; }
+        if (list.items.length + added.length > LIMITS.itemsPerList) { toast(t('tooManyItems')); return; }
+        list.items.push(...added); touch(list); persist(); closeModal(); renderDetail();
+      }
     });
   }
   function parseLines(text) {
-    return text.split(/\r?\n/).map(s => s.trim()).filter(Boolean).map(line => {
+    if (typeof text !== 'string' || text.length > LIMITS.pasteChars) throw new RangeError('paste-too-large');
+    const lines = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+    if (lines.length > LIMITS.itemsPerList) throw new RangeError('too-many-items');
+    const items = lines.map(line => {
       line = line.replace(/^(?:[-*•☐☑✅▫️✔️]+\s*|\d+[.)]\s*)/u, '').trim();
       let name = line, quantity = '1';
       let match = line.match(/^(\d+(?:[.,]\d+)?)\s*[x×*]\s*(.+)$/i);
       if (match) { quantity = match[1].replace(',', '.'); name = match[2].trim(); }
       else { match = line.match(/^(.+?)\s*[x×]\s*(\d+(?:[.,]\d+)?)\s*$/i); if (match) { name = match[1].trim(); quantity = match[2].replace(',', '.'); } else { match = line.match(/^(.+?)\s*(?:-|—|:)\s*(\d+(?:[.,]\d+)?)\s*$/); if (match) { name = match[1].trim(); quantity = match[2].replace(',', '.'); } } }
-      return normalizeItem({ name, quantity });
-    }).filter(Boolean);
+      return normalizeItem({ name, quantity }, { strict:true, freshId:true });
+    });
+    if (items.some(item => !item)) throw new TypeError('invalid-paste-item');
+    return items;
   }
   function showItemModal(id = null) {
     const list = currentList(); if (!list) return;
     const item = id ? list.items.find(i => i.id === id) : null;
-    showModal(item ? t('editItem') : t('addItem'), `<div class="field"><label for="itemName">${t('itemName')}</label><input id="itemName" required maxlength="100" placeholder="${t('itemPlaceholder')}" value="${escapeHtml(item?.name || '')}"></div><div class="form-grid"><div class="field"><label for="itemQty">${t('quantity')}</label><input id="itemQty" inputmode="decimal" value="${escapeHtml(item?.quantity || '1')}"></div><div class="field"><label for="itemBrand">${t('brand')}</label><input id="itemBrand" maxlength="60" placeholder="${t('brandPlaceholder')}" value="${escapeHtml(item?.brand || '')}"></div></div><div class="field"><label for="itemPrice">${t('price')}</label><input id="itemPrice" inputmode="decimal" placeholder="0,00" value="${item?.price == null ? '' : escapeHtml(item.price)}"></div><div class="modal-actions"><button type="button" class="secondary" data-action="close-modal">${t('cancel')}</button><button class="primary" type="submit">${t('save')}</button></div>`, {
+    if (!item && list.items.length >= LIMITS.itemsPerList) { toast(t('tooManyItems')); return; }
+    showModal(item ? t('editItem') : t('addItem'), `<div class="field"><label for="itemName">${t('itemName')}</label><input id="itemName" required maxlength="${LIMITS.itemName}" placeholder="${t('itemPlaceholder')}" value="${escapeHtml(item?.name || '')}"></div><div class="form-grid"><div class="field"><label for="itemQty">${t('quantity')}</label><input id="itemQty" inputmode="decimal" maxlength="16" value="${escapeHtml(item?.quantity || '1')}"></div><div class="field"><label for="itemBrand">${t('brand')}</label><input id="itemBrand" maxlength="${LIMITS.brand}" placeholder="${t('brandPlaceholder')}" value="${escapeHtml(item?.brand || '')}"></div></div><div class="field"><label for="itemPrice">${t('price')}</label><input id="itemPrice" inputmode="decimal" maxlength="16" placeholder="0,00" value="${item?.price == null ? '' : escapeHtml(item.price)}"></div><div class="modal-actions"><button type="button" class="secondary" data-action="close-modal">${t('cancel')}</button><button class="primary" type="submit">${t('save')}</button></div>`, {
       submit: () => {
-        const name = $('itemName').value.trim(); let quantity = $('itemQty').value.trim().replace(',', '.'); const rawPrice = $('itemPrice').value.trim().replace(',', '.');
-        const price = rawPrice === '' ? null : Number(rawPrice);
-        if (!name) return;
-        if (!quantity) quantity = '1';
-        if (!Number.isFinite(Number(quantity)) || Number(quantity) <= 0) { toast(t('qtyError')); return; }
-        if (price !== null && (!Number.isFinite(price) || price < 0)) { toast(t('priceError')); return; }
-        const data = { name, quantity, brand:$('itemBrand').value.trim(), price };
+        const name = $('itemName').value.trim(); const rawQuantity = $('itemQty').value.trim(); const rawPrice = $('itemPrice').value.trim(); const brand = $('itemBrand').value.trim();
+        const quantity = parseDecimal(rawQuantity || '1', { min:Number.MIN_VALUE, max:LIMITS.quantity });
+        const price = parseDecimal(rawPrice, { min:0, max:LIMITS.price, allowEmpty:true });
+        if (!name || name.length > LIMITS.itemName || hasControlChars(name) || brand.length > LIMITS.brand || hasControlChars(brand)) return;
+        if (quantity === undefined) { toast(t('qtyError')); return; }
+        if (price === undefined) { toast(t('priceError')); return; }
+        const data = { name, quantity:String(quantity), brand, price };
         if (item) Object.assign(item, data); else list.items.push({ id:uid(), ...data, done:false });
         touch(list); persist(); closeModal(); renderDetail(); toast(item ? t('itemUpdated') : t('itemAdded'));
       }
@@ -284,8 +460,8 @@
   }
   function showRenameModal(id) {
     const list = state.lists.find(l => l.id === id); if (!list) return;
-    showModal(t('renameTitle'), `<div class="field"><label for="renameName">${t('listName')}</label><input id="renameName" maxlength="70" required value="${escapeHtml(list.name)}"></div><div class="modal-actions"><button type="button" class="secondary" data-action="close-modal">${t('cancel')}</button><button class="primary" type="submit">${t('save')}</button></div>`, {
-      submit: () => { const name = $('renameName').value.trim(); if (!name) return; list.name = name; touch(list); persist(); closeModal(); renderHome(); if (currentId === list.id) renderDetail(); toast(t('nameUpdated')); }
+    showModal(t('renameTitle'), `<div class="field"><label for="renameName">${t('listName')}</label><input id="renameName" maxlength="${LIMITS.listName}" required value="${escapeHtml(list.name)}"></div><div class="modal-actions"><button type="button" class="secondary" data-action="close-modal">${t('cancel')}</button><button class="primary" type="submit">${t('save')}</button></div>`, {
+      submit: () => { const name = $('renameName').value.trim(); if (!name || name.length > LIMITS.listName || hasControlChars(name)) return; list.name = name; touch(list); persist(); closeModal(); renderHome(); if (currentId === list.id) renderDetail(); toast(t('nameUpdated')); }
     });
   }
   function showShareModal() {
@@ -295,7 +471,9 @@
     return [`🛒 ${list.name}`, ...list.items.map(item => `${item.done ? '✅' : '▫️'} ${item.name} · ${item.quantity}${item.brand ? ` · ${item.brand}` : ''}${item.price != null ? ` · ${formatMoney(Number(item.price) * numberQty(item.quantity))}` : ''}`)].join('\n');
   }
   function encodePayload(value) {
-    const bytes = new TextEncoder().encode(JSON.stringify(value)); let binary = '';
+    const bytes = new TextEncoder().encode(JSON.stringify(value));
+    if (bytes.length > LIMITS.sharedPayloadBytes) throw new RangeError('Shared payload too large');
+    let binary = '';
     bytes.forEach(b => binary += String.fromCharCode(b));
     return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
   }
@@ -306,11 +484,15 @@
   }
   function sharedLink(list) {
     const payload = { name:list.name, items:list.items.map(({name,quantity,brand,price}) => ({name,quantity,brand,price,checked:false})) };
-    const url = new URL(location.href); url.search = ''; url.hash = ''; url.searchParams.set('importList', encodePayload(payload)); return url.toString();
+    let encoded;
+    try { encoded = encodePayload(payload); } catch { return null; }
+    if (encoded.length > LIMITS.sharedPayloadChars) return null;
+    const url = new URL(location.href); url.search = ''; url.hash = ''; url.searchParams.set('importList', encoded); return url.toString();
   }
   async function shareLink() {
     const list = currentList(); if (!list) return;
     const url = sharedLink(list);
+    if (!url) { toast(t('shareTooLarge')); return; }
     if (navigator.share) {
       try { await navigator.share({ title:list.name, text:t('linkHint'), url }); closeModal(); return; } catch (error) { if (error?.name === 'AbortError') return; }
     }
@@ -321,13 +503,21 @@
     const params = new URLSearchParams(location.search); const encoded = params.get('importList'); if (!encoded) return false;
     params.delete('importList'); const remaining=params.toString(); const clean = `${location.pathname}${remaining ? `?${remaining}` : ''}${location.hash}`; history.replaceState({}, '', clean);
     try {
+      if (encoded.length > LIMITS.sharedPayloadChars) throw new TypeError('Payload too large');
       const payload = decodePayload(encoded);
-      if (!payload || typeof payload !== 'object' || !Array.isArray(payload.items)) throw new Error('Bad payload');
-      const name = String(payload.name || payload.title || 'Lista compartida').trim() || 'Lista compartida';
+      if (!isRecord(payload) || !Array.isArray(payload.items)) throw new TypeError('Invalid payload schema');
+      if (Object.keys(payload).some(key => !['name','title','items'].includes(key))) throw new TypeError('Unexpected payload field');
+      const rawName = payload.name ?? payload.title;
+      if (typeof rawName !== 'string') throw new TypeError('Invalid list name');
+      const name = rawName.trim();
+      if (!name || name.length > LIMITS.listName || hasControlChars(name) || payload.items.length > LIMITS.itemsPerList) throw new TypeError('List limits exceeded');
+      if (state.lists.length >= LIMITS.lists) { toast(t('listLimit')); return false; }
       const titleKey = name.toLocaleLowerCase();
-      const items = payload.items.map(normalizeItem).filter(item => item && item.name.toLocaleLowerCase() !== titleKey).map(item => ({ ...item, done:false }));
-      const now = new Date().toISOString(); const list = { id:uid(), name, saved:true, createdAt:now, updatedAt:now, items };
-      state.lists.unshift(list); persist(); openList(list.id); toast(t('imported')); return true;
+      const filteredItems = payload.items.filter(item => !(isRecord(item) && typeof item.name === 'string' && item.name.trim().toLocaleLowerCase() === titleKey));
+      const imported = normalizeList({ name, saved:true, items:filteredItems }, { strict:true, freshIds:true });
+      if (!imported) throw new TypeError('Invalid item schema');
+      const now = new Date().toISOString(); const list = { ...imported, id:uid(), saved:true, createdAt:now, updatedAt:now, items:imported.items.map(item => ({ ...item, done:false })) };
+      state.lists.unshift(list); persist(); goHome(); toast(t('imported')); return true;
     } catch { toast(t('badImport')); return false; }
   }
 
@@ -335,7 +525,7 @@
     const button = event.target.closest('[data-action]'); if (!button) return;
     const action = button.dataset.action; const id = button.dataset.id;
     if (action === 'close-modal') return closeModal();
-    if (action === 'open-list') return openList(id);
+    if (action === 'open-list') { closeDrawer(); return openList(id); }
     if (action === 'create-list') return showCreateModal();
     if (action === 'paste-list') return showPasteModal();
     if (action === 'edit-item') return showItemModal(id);
@@ -349,7 +539,10 @@
     if (action === 'install-app') return installApp();
     if (action === 'step-qty') {
       const item=currentList()?.items.find(i=>i.id===id); if (!item) return;
-      const next=Math.max(0.1, Math.round((numberQty(item.quantity)+Number(button.dataset.step))*100)/100); item.quantity=String(next); touch(currentList()); persist(); renderDetail(); return;
+      const step=Number(button.dataset.step); if (step!==1&&step!==-1) return;
+      const list=currentList(); const next=Math.min(LIMITS.quantity, Math.max(0.1, Math.round((numberQty(item.quantity)+step)*100)/100)); item.quantity=String(next); touch(list); persist();
+      const output=button.closest('.qty-stepper')?.querySelector('output'); if (output) output.textContent=item.quantity;
+      return;
     }
   }
   function handleChange(event) {
@@ -362,28 +555,28 @@
     }
     if (target.matches('[data-action="edit-quantity"]')) {
       const list=currentList(), item=list?.items.find(i=>i.id===target.dataset.id); if (!item) return;
-      const raw=target.value.trim().replace(',','.');
-      if (!Number.isFinite(Number(raw))||Number(raw)<=0) { target.value=item.quantity; toast(t('qtyError')); return; }
-      item.quantity=raw; touch(list); persist(); return;
+      const quantity=parseDecimal(target.value, { min:Number.MIN_VALUE, max:LIMITS.quantity });
+      if (quantity===undefined) { target.value=item.quantity; toast(t('qtyError')); return; }
+      item.quantity=String(quantity); target.value=item.quantity; touch(list); persist(); return;
     }
     if (target.matches('[data-action="edit-price"]')) {
       const list=currentList(), item=list?.items.find(i=>i.id===target.dataset.id); if (!item) return;
-      const raw=target.value.trim().replace(',','.');
-      if (raw!==''&&(!Number.isFinite(Number(raw))||Number(raw)<0)) { target.value=''; item.price=null; }
-      else item.price=raw===''?null:Number(raw);
-      touch(list); persist(); updateSummary(list);
+      const price=parseDecimal(target.value, { min:0, max:LIMITS.price, allowEmpty:true });
+      if (price===undefined) { target.value=item.price==null?'':String(item.price); toast(t('priceError')); return; }
+      item.price=price; touch(list); persist(); updateSummary(list);
     }
   }
   function handleInput(event) {
     const target=event.target;
     if (target.matches('[data-action="edit-quantity"]')) {
       const item=currentList()?.items.find(i=>i.id===target.dataset.id); if (!item) return;
-      const raw=target.value.trim().replace(',','.'); if (raw===''||/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(raw)) { item.quantity=raw||'1'; touch(currentList()); persist(); }
+      const raw=target.value.trim(); const quantity=parseDecimal(raw,{min:Number.MIN_VALUE,max:LIMITS.quantity});
+      if (quantity!==undefined) item.quantity=String(quantity);
     }
     if (target.matches('[data-action="edit-price"]')) {
       const list=currentList(), item=list?.items.find(i=>i.id===target.dataset.id); if (!item) return;
-      const raw=target.value.trim().replace(',','.');
-      if (raw===''||/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(raw)) { item.price=raw===''?null:Number(raw); touch(list); persist(); updateSummary(list); }
+      const price=parseDecimal(target.value, { min:0, max:LIMITS.price, allowEmpty:true });
+      if (price!==undefined) { item.price=price; updateSummary(list); }
     }
   }
   async function installApp() {
@@ -412,9 +605,11 @@
     $('addItemBtn').addEventListener('click', () => showItemModal());
     $('modeBtn').addEventListener('click', () => {
       const list=currentList(); if (!list) return;
-      if (activeMode==='edit') { list.saved=true; activeMode='shop'; toast(t('listSaved')); }
-      else { list.saved=false; activeMode='edit'; }
-      touch(list); persist(); renderDetail();
+      if (activeMode==='edit') {
+        list.saved=true; activeMode='shop'; touch(list); persist(); goHome(); toast(t('listSaved'));
+      } else {
+        list.saved=false; activeMode='edit'; touch(list); persist(); renderSavedLists(); renderDetail();
+      }
     });
     $('clearBoughtBtn').addEventListener('click', () => {
       const list=currentList(); if (!list) return; const count=list.items.filter(i=>i.done).length;
@@ -433,13 +628,16 @@
 
   function initialize() {
     initEvents();
+    if (stateNeedsMigration && persist()) stateNeedsMigration=false;
     if (state.profile) { state.profile.theme=state.profile.theme==='pastel'?'pastel':'dark_f1'; state.profile.language=state.profile.language==='en'?'en':'es'; applyTheme(state.profile.theme); updateProfileUI(); }
     else applyTheme(defaultTheme());
     renderHome();
     const imported=importSharedList();
     if (!state.profile) showProfileModal(true);
     else if (!imported) goHome();
-    if ('serviceWorker' in navigator && location.protocol !== 'file:') window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+    setupServiceWorker();
+    if (stateStorageUnavailable) toast(t('noStorage'));
+    else if (stateLoadWarning) toast(t('recoveredData'));
   }
   initialize();
 })();
